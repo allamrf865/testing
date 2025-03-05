@@ -88,10 +88,14 @@ if menu == "📝 Isi Form":
     frekuensi = st.slider("🛍️ Frekuensi Belanja dalam Sebulan", min_value=1, max_value=30, step=1)
     jenis_kelamin = st.radio("🚻 Jenis Kelamin", ["Pria", "Wanita"], index=0)
 
-    if st.button("💾 Simpan Data"):
+if st.button("💾 Simpan Data"):
     new_data = pd.DataFrame([{ 
-        "Usia": usia, "Penghasilan": penghasilan, "Rating": rating, 
-        "Review": review, "Frekuensi": frekuensi, "Jenis_Kelamin": jenis_kelamin 
+        "Usia": usia, 
+        "Penghasilan": penghasilan, 
+        "Rating": rating, 
+        "Review": review, 
+        "Frekuensi": frekuensi, 
+        "Jenis_Kelamin": jenis_kelamin 
     }])
 
     if os.path.exists(data_file):
@@ -105,6 +109,7 @@ if menu == "📝 Isi Form":
     # Aktifkan analisis setelah menyimpan data
     st.session_state["show_analysis"] = True  
     st.success("✅ Data berhasil disimpan! Pergi ke Dashboard dan aktifkan 'Tampilkan Analisis Data' untuk melihat hasil analisis.")
+
 # ========================= 🔥 TAHAP 3: ANALISIS & VISUALISASI DATA ========================= #
 if menu == "📊 Dashboard":
     st.markdown("<h1 class='big-font'>📊 Dashboard Analitik</h1>", unsafe_allow_html=True)

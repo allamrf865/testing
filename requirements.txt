@@ -1,0 +1,13 @@
+streamlit
+pandas
+numpy
+plotly
+networkx
+h3
+textblob
+fpdf
+qiskit
+scikit-learn
+xgboost
+tensorflow
+scipy

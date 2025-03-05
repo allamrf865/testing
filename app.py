@@ -9,7 +9,6 @@ import networkx as nx
 import h3
 from textblob import TextBlob
 from fpdf import FPDF
-from qiskit import QuantumCircuit, Aer, assemble, execute
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -178,16 +177,6 @@ if menu == "📊 Dashboard":
         signal_fft = fft(df["Frekuensi"])
         fig_fft = px.line(y=np.abs(signal_fft), title="FFT Transform dari Frekuensi Belanja")
         st.plotly_chart(fig_fft, use_container_width=True)
-
-        # 🔥 QUANTUM COMPUTING SIMULASI
-        st.subheader("⚛️ Quantum Computing Simulation")
-        qc = QuantumCircuit(5)
-        qc.h(range(5))
-        qc.measure_all()
-        simulator = Aer.get_backend('qasm_simulator')
-        result = execute(qc, simulator, shots=1024).result()
-        quantum_counts = result.get_counts()
-        st.write(f"Quantum Measurement Result: {quantum_counts}")
 
         # 🔥 NETWORK ANALYSIS - GRAPH CENTRALITY
         st.subheader("🌐 Network Science - Graph Centrality")

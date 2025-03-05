@@ -144,7 +144,7 @@ for i in range(5):  # Tambah 5 garis berbeda
     multi_line_df[f"Tren_{i+1}"] = df["Frekuensi"] + np.random.randint(-5, 5, len(df))
 
 fig_multiline = px.line(multi_line_df, x=multi_line_df.index, y=multi_line_df.columns,
-                        title="Multi-Line Chart dengan Banyak Line (Pengganti Geospatial Heatmap)")
+                        title="Multi-Line Chart")
 st.plotly_chart(fig_multiline, use_container_width=True)
 
         # 🔥 DBSCAN CLUSTERING UNTUK SEGMENTASI PELANGGAN
@@ -308,8 +308,7 @@ def generate_pdf():
     pdf.add_page()
 
     # Gunakan font Unicode agar tidak error
-    pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
-    pdf.set_font("DejaVu", size=12)
+    pdf.set_font("Arial", size=12)
 
     # 📝 Tambahkan Judul Laporan
     pdf.cell(200, 10, txt="Laporan Analisis Kuesioner", ln=True, align='C')

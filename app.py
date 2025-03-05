@@ -116,37 +116,21 @@ if menu == "📊 Dashboard":
 
         st.markdown("---")
 
-        # 🔥 GEOSPATIAL ANALYSIS DENGAN H3 HEATMAP
-st.subheader("🌍 Geospatial Heatmap")
+       # 🔥 MULTI-LINE CHART (PENGGANTI GEOSPATIAL HEATMAP)
+st.subheader("📈 Multi-Line Chart untuk Tren Data")
 
-# Pastikan Latitude & Longitude tersedia
-if "Latitude" not in df.columns or "Longitude" not in df.columns:
-    st.warning("⚠️ Data tidak memiliki koordinat, menggunakan nilai acak sebagai contoh.")
-    df["Latitude"] = np.random.uniform(-90, 90, len(df))
-    df["Longitude"] = np.random.uniform(-180, 180, len(df))
+# Pastikan ada data untuk membuat banyak garis
+if 'Frekuensi' not in df.columns:
+    df['Frekuensi'] = np.random.randint(1, 30, len(df))
 
-# Validasi nilai koordinat agar tidak ada NaN
-df = df.dropna(subset=["Latitude", "Longitude"])
-df["Latitude"] = df["Latitude"].astype(float)
-df["Longitude"] = df["Longitude"].astype(float)
+# Buat dummy data untuk tren
+multi_line_df = df[['Frekuensi']].copy()
+for i in range(5):  # Tambah 5 garis berbeda
+    multi_line_df[f"Tren_{i+1}"] = df["Frekuensi"] + np.random.randint(-5, 5, len(df))
 
-# Pastikan data tidak kosong setelah cleaning
-if not df.empty:
-    try:
-        df["H3_Index"] = df.apply(
-            lambda row: h3.geo_to_h3(row["Latitude"], row["Longitude"], 7), axis=1
-        )
-        
-        fig_geo = px.density_mapbox(df, lat="Latitude", lon="Longitude", z="Rating",
-                                    radius=10, mapbox_style="open-street-map",
-                                    title="Geospatial Heatmap berdasarkan Rating")
-        st.plotly_chart(fig_geo, use_container_width=True)
-    
-    except Exception as e:
-        st.error(f"⚠️ Terjadi kesalahan dalam pemrosesan H3 Heatmap: {e}")
-
-else:
-    st.warning("⚠️ Tidak ada data yang tersedia untuk dianalisis.")
+fig_multiline = px.line(multi_line_df, x=multi_line_df.index, y=multi_line_df.columns,
+                        title="Multi-Line Chart dengan Banyak Line (Pengganti Geospatial Heatmap)")
+st.plotly_chart(fig_multiline, use_container_width=True)
 
         # 🔥 DBSCAN CLUSTERING UNTUK SEGMENTASI PELANGGAN
 st.subheader("📊 DBSCAN Clustering")
@@ -263,19 +247,31 @@ fig_ternary = px.scatter_ternary(df, a="Usia", b="Penghasilan", c="Frekuensi",
                                  title="Ternary Plot untuk Segmen Pelanggan")
 st.plotly_chart(fig_ternary, use_container_width=True)
 
-# 🔥 SANKEY DIAGRAM
-st.subheader("🔗 Sankey Diagram")
-sankey_labels = ["Usia Muda", "Usia Dewasa", "Usia Tua", "Belanja Rendah", "Belanja Tinggi"]
-sankey_source = [0, 0, 1, 1, 2, 2]
-sankey_target = [3, 4, 3, 4, 3, 4]
-sankey_value = [5, 15, 10, 20, 8, 12]
+# 🔥 NETWORK ANALYSIS - DEGREE, BETWEENNESS, CLOSENESS CENTRALITY
+st.subheader("🌐 Network Science - Centrality Analysis")
 
-fig_sankey = go.Figure(go.Sankey(
-    node=dict(label=sankey_labels),
-    link=dict(source=sankey_source, target=sankey_target, value=sankey_value)
-))
-fig_sankey.update_layout(title_text="Sankey Diagram - Relasi Usia & Belanja")
-st.plotly_chart(fig_sankey, use_container_width=True)
+# Buat graph acak
+G = nx.erdos_renyi_graph(20, 0.3)
+
+# Hitung centrality
+degree_centrality = nx.degree_centrality(G)
+betweenness_centrality = nx.betweenness_centrality(G)
+closeness_centrality = nx.closeness_centrality(G)
+
+# Konversi ke DataFrame
+centrality_df = pd.DataFrame({
+    "Node": list(G.nodes()),
+    "Degree Centrality": list(degree_centrality.values()),
+    "Betweenness Centrality": list(betweenness_centrality.values()),
+    "Closeness Centrality": list(closeness_centrality.values())
+})
+
+# Scatter Plot untuk Visualisasi Centrality
+fig_network = px.scatter(centrality_df, x="Degree Centrality", y="Betweenness Centrality",
+                         size="Closeness Centrality", hover_name="Node",
+                         title="Network Analysis - Degree, Betweenness, Closeness Centrality",
+                         color_discrete_sequence=["#636EFA"])
+st.plotly_chart(fig_network, use_container_width=True)
 
 # 🔥 SUNBURST CHART
 st.subheader("🌞 Sunburst Chart")

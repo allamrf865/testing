@@ -149,14 +149,37 @@ else:
     st.warning("⚠️ Tidak ada data yang tersedia untuk dianalisis.")
 
         # 🔥 DBSCAN CLUSTERING UNTUK SEGMENTASI PELANGGAN
-        st.subheader("📊 DBSCAN Clustering")
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(df[['Usia', 'Penghasilan', 'Frekuensi']])
-        dbscan = DBSCAN(eps=0.5, min_samples=5).fit(X_scaled)
-        df['Cluster'] = dbscan.labels_
-        fig_cluster = px.scatter(df, x="Usia", y="Penghasilan", color=df["Cluster"].astype(str),
-                                 title="Hasil Clustering DBSCAN", color_discrete_sequence=px.colors.qualitative.Set1)
-        st.plotly_chart(fig_cluster, use_container_width=True)
+st.subheader("📊 DBSCAN Clustering")
+
+# Pastikan dataset memiliki kolom yang dibutuhkan, jika tidak ada, buat data random
+required_columns = ['Usia', 'Penghasilan', 'Frekuensi']
+for col in required_columns:
+    if col not in df.columns:
+        st.warning(f"⚠️ Kolom '{col}' tidak ditemukan, menggunakan nilai acak sebagai contoh.")
+        df[col] = np.random.randint(18, 65, len(df)) if col == "Usia" else np.random.randint(1000, 10000, len(df))
+
+# Hapus baris dengan NaN jika masih ada setelah inisialisasi
+df_cluster = df.dropna(subset=required_columns).copy()
+
+if not df_cluster.empty:
+    # Standarisasi data sebelum clustering
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(df_cluster[required_columns])
+
+    # DBSCAN Clustering
+    dbscan = DBSCAN(eps=0.5, min_samples=5).fit(X_scaled)
+    df_cluster['Cluster'] = dbscan.labels_
+
+    # Visualisasi hasil clustering
+    fig_cluster = px.scatter(df_cluster, x="Usia", y="Penghasilan", 
+                             color=df_cluster["Cluster"].astype(str),
+                             title="Hasil Clustering DBSCAN",
+                             color_discrete_sequence=px.colors.qualitative.Set1)
+    st.plotly_chart(fig_cluster, use_container_width=True)
+
+else:
+    st.warning("⚠️ Tidak cukup data untuk clustering.")
+
 
         # 🔥 XGBOOST PREDICTION UNTUK ANALISIS TREN
         st.subheader("📈 XGBoost Prediction")

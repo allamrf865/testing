@@ -294,6 +294,27 @@ fig_sunburst = px.sunburst(df, path=["Jenis_Kelamin", "Frekuensi"], values="Peng
                            title="Sunburst Chart - Jenis Kelamin vs Frekuensi Belanja")
 st.plotly_chart(fig_sunburst, use_container_width=True)
 
+# 🔥 FOOTER
+st.markdown("""
+    <style>
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+    <div class="footer">
+        Created by <a href="https://your-website.com" target="_blank">Allam R FKUI 2022</a> 🚀
+    </div>
+""", unsafe_allow_html=True)
+
 # 🔥 GENERATE PDF REPORT
 import io
 import matplotlib.pyplot as plt
@@ -307,7 +328,7 @@ def generate_pdf():
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
-    # Gunakan font Unicode agar tidak error
+    # Gunakan font default yang tidak error
     pdf.set_font("Arial", size=12)
 
     # 📝 Tambahkan Judul Laporan
@@ -332,7 +353,7 @@ def generate_pdf():
     pdf.cell(200, 10, txt="📄 Contoh Data Responden:", ln=True)
     pdf.ln(5)
     
-    pdf.set_font("DejaVu", size=10)
+    pdf.set_font("Arial", size=10)  # Gunakan font Arial agar tidak error
     pdf.cell(40, 10, "Usia", 1)
     pdf.cell(50, 10, "Penghasilan ($)", 1)
     pdf.cell(40, 10, "Frekuensi", 1)
@@ -375,4 +396,5 @@ if st.button("📥 Generate PDF Report"):
     pdf_file = generate_pdf()
     st.download_button(label="⬇️ Download Report PDF", data=pdf_file,
                        file_name="Laporan_Analisis.pdf", mime="application/pdf")
+
 

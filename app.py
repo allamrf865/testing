@@ -26,6 +26,10 @@ st.markdown("<h3 style='text-align: center; color: #33FFBD;'>Dapatkan insight te
 st.sidebar.title("🔍 Navigasi Aplikasi")
 menu = st.sidebar.radio("Pilih Halaman:", ["🏠 Home", "📝 Isi Form", "📊 Dashboard"])
 
+# Tambahkan opsi untuk menampilkan analisis setelah input atau tanpa input
+if menu == "📊 Dashboard":
+    show_analysis = st.sidebar.checkbox("🔍 Tampilkan Analisis Data", value=False)
+
 # File dataset
 data_file = "data/Sample_Data_Kuesioner__1000_Data_.csv"
 
@@ -84,24 +88,30 @@ if menu == "📝 Isi Form":
     frekuensi = st.slider("🛍️ Frekuensi Belanja dalam Sebulan", min_value=1, max_value=30, step=1)
     jenis_kelamin = st.radio("🚻 Jenis Kelamin", ["Pria", "Wanita"], index=0)
 
-    # 🎯 Simpan Data ke CSV
     if st.button("💾 Simpan Data"):
-        new_data = pd.DataFrame([{ 
-            "Usia": usia, "Penghasilan": penghasilan, "Rating": rating, 
-            "Review": review, "Frekuensi": frekuensi, "Jenis_Kelamin": jenis_kelamin 
-        }])
-        
-        if os.path.exists(data_file):
-            existing_data = pd.read_csv(data_file)
-            df = pd.concat([existing_data, new_data], ignore_index=True)
-        else:
-            df = new_data
-        
-        df.to_csv(data_file, index=False)
-        st.success("✅ Data berhasil disimpan! Klik ke Dashboard untuk melihat analisis terbaru.")
+    new_data = pd.DataFrame([{ 
+        "Usia": usia, "Penghasilan": penghasilan, "Rating": rating, 
+        "Review": review, "Frekuensi": frekuensi, "Jenis_Kelamin": jenis_kelamin 
+    }])
+
+    if os.path.exists(data_file):
+        existing_data = pd.read_csv(data_file)
+        df = pd.concat([existing_data, new_data], ignore_index=True)
+    else:
+        df = new_data
+
+    df.to_csv(data_file, index=False)
+
+    # Aktifkan analisis setelah menyimpan data
+    st.session_state["show_analysis"] = True  
+    st.success("✅ Data berhasil disimpan! Pergi ke Dashboard dan aktifkan 'Tampilkan Analisis Data' untuk melihat hasil analisis.")
 # ========================= 🔥 TAHAP 3: ANALISIS & VISUALISASI DATA ========================= #
 if menu == "📊 Dashboard":
     st.markdown("<h1 class='big-font'>📊 Dashboard Analitik</h1>", unsafe_allow_html=True)
+    
+    if not show_analysis:
+        st.warning("⚠️ Pilih 'Tampilkan Analisis Data' di sidebar untuk melihat hasil analisis.")
+        st.stop()  # Hentikan eksekusi jika analisis tidak diaktifkan
 
     if df.empty:
         st.warning("⚠️ Tidak ada data! Silakan isi kuesioner di halaman Form.")

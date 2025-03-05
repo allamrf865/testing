@@ -117,14 +117,37 @@ if menu == "📊 Dashboard":
         st.markdown("---")
 
         # 🔥 GEOSPATIAL ANALYSIS DENGAN H3 HEATMAP
-        st.subheader("🌍 Geospatial Heatmap")
-        df["Latitude"] = np.random.uniform(-90, 90, len(df))
-        df["Longitude"] = np.random.uniform(-180, 180, len(df))
-        df["H3_Index"] = df.apply(lambda row: h3.geo_to_h3(row["Latitude"], row["Longitude"], 7), axis=1)
+st.subheader("🌍 Geospatial Heatmap")
+
+# Pastikan Latitude & Longitude tersedia
+if "Latitude" not in df.columns or "Longitude" not in df.columns:
+    st.warning("⚠️ Data tidak memiliki koordinat, menggunakan nilai acak sebagai contoh.")
+    df["Latitude"] = np.random.uniform(-90, 90, len(df))
+    df["Longitude"] = np.random.uniform(-180, 180, len(df))
+
+# Validasi nilai koordinat agar tidak ada NaN
+df = df.dropna(subset=["Latitude", "Longitude"])
+df["Latitude"] = df["Latitude"].astype(float)
+df["Longitude"] = df["Longitude"].astype(float)
+
+# Pastikan data tidak kosong setelah cleaning
+if not df.empty:
+    try:
+        df["H3_Index"] = df.apply(
+            lambda row: h3.geo_to_h3(row["Latitude"], row["Longitude"], 7), axis=1
+        )
+        
         fig_geo = px.density_mapbox(df, lat="Latitude", lon="Longitude", z="Rating",
                                     radius=10, mapbox_style="open-street-map",
                                     title="Geospatial Heatmap berdasarkan Rating")
         st.plotly_chart(fig_geo, use_container_width=True)
+    
+    except Exception as e:
+        st.error(f"⚠️ Terjadi kesalahan dalam pemrosesan H3 Heatmap: {e}")
+
+else:
+    st.warning("⚠️ Tidak ada data yang tersedia untuk dianalisis.")
+
 
         # 🔥 DBSCAN CLUSTERING UNTUK SEGMENTASI PELANGGAN
         st.subheader("📊 DBSCAN Clustering")

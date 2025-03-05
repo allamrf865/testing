@@ -148,7 +148,6 @@ if not df.empty:
 else:
     st.warning("⚠️ Tidak ada data yang tersedia untuk dianalisis.")
 
-
         # 🔥 DBSCAN CLUSTERING UNTUK SEGMENTASI PELANGGAN
         st.subheader("📊 DBSCAN Clustering")
         scaler = StandardScaler()
